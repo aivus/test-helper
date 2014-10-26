@@ -1,0 +1,12 @@
+{
+    "name": "aivus/test-helper",
+    "description": "Helper package for testing",
+    "minimum-stability": "dev",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ilya Antipenko",
+            "email": "ilya@antipenko.pp.ua"
+        }
+    ]
+}
