@@ -3,7 +3,11 @@
     "description": "Helper package for testing",
     "minimum-stability": "dev",
     "license": "MIT",
-    "keywords": ["unit", "testing", "helper"],
+    "keywords": [
+        "unit",
+        "testing",
+        "helper"
+    ],
     "authors": [
         {
             "name": "Ilya Antipenko",
@@ -18,7 +22,12 @@
     },
     "autoload": {
         "psr-4": {
-            "aivus\\TestHelper\\": "src"
+            "Aivus\\TestHelper\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Aivus\\TestHelper\\Tests\\": "tests/"
         }
     }
 }

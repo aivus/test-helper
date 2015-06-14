@@ -1,5 +1,5 @@
 <?php
-namespace aivus\TestHelper;
+namespace Aivus\TestHelper;
 
 use ReflectionClass;
 use ReflectionMethod;
@@ -7,59 +7,99 @@ use ReflectionMethod;
 class TestHelper
 {
     /**
-     * The method allows get property value of class or object (include private/protected)
+     * This method allows to get property value of class (if property is static) or object (include private/protected)
      *
-     * @param $classOrObject
-     * @param $propertyName
+     * @param string|object $classNameOrObject
+     * @param               $propertyName
+     *
      * @return mixed
      */
-    public static function getPrivatePropertyValue($classOrObject, $propertyName)
+    public function getPropertyValue($classNameOrObject, $propertyName)
     {
-        $reflector = new ReflectionClass($classOrObject);
-        $property = $reflector->getProperty($propertyName);
-        $property->setAccessible(true);
-        if (is_object($classOrObject)) {
-            $value = $property->getValue($classOrObject);
-        } else {
+        $property = $this->getProperty($classNameOrObject, $propertyName);
+        if (is_object($classNameOrObject)) {
+            $value = $property->getValue($classNameOrObject);
+        } elseif (class_exists($classNameOrObject) && $property->isStatic()) {
             $value = $property->getValue();
+        } else {
+            throw new \InvalidArgumentException('Property not found in object or class name passed with non-static property');
         }
 
         return $value;
     }
 
     /**
-     * The method allows get class methods (include private/protected)
+     * This method allows to set value of class (if property is static) or object property
      *
-     * @author    Joe Sexton <joe@webtipblog.com>
-     * @param     string $className
-     * @param     string $methodName
+     * @param string|object $classNameOrObject
+     * @param string        $propertyName
+     * @param mixed         $propertyValue
+     */
+    public function setPropertyValue($classNameOrObject, $propertyName, $propertyValue)
+    {
+        $property = $this->getProperty($classNameOrObject, $propertyName);
+        if (is_object($classNameOrObject)) {
+            $property->setValue($classNameOrObject, $propertyValue);
+        } elseif (is_string($classNameOrObject) && class_exists($classNameOrObject) && $property->isStatic()) {
+            $property->setValue($propertyValue);
+        } else {
+            throw new \InvalidArgumentException('Property not found in object or class name passed with non-static property');
+        }
+    }
+
+    /**
+     * This method allows to get class method (include private/protected)
+     *
+     * @param     object|string $classNameOrObject Object or class name
+     * @param     string        $methodName
+     *
      * @return    ReflectionMethod
      */
-    public static function getPrivateMethod($className, $methodName)
+    public function getMethod($classNameOrObject, $methodName)
     {
-        $reflector = new ReflectionClass($className);
-        $method = $reflector->getMethod($methodName);
+        $reflector = new ReflectionClass($classNameOrObject);
+        $method    = $reflector->getMethod($methodName);
         $method->setAccessible(true);
 
         return $method;
     }
 
     /**
-     * The method allows set value of private/protected property
+     * This method allows to get class property (include private/protected)
      *
-     * @param string|object $classOrObject
-     * @param string $propertyName
-     * @param mixed $propertyValue
+     * @param string|object $classNameOrObject
+     * @param string        $propertyName
+     *
+     * @return \ReflectionProperty
      */
-    public static function setPrivateProperty($classOrObject, $propertyName, $propertyValue)
+    public function getProperty($classNameOrObject, $propertyName)
     {
-        $reflector = new ReflectionClass($classOrObject);
-        $property = $reflector->getProperty($propertyName);
+        $reflector = new ReflectionClass($classNameOrObject);
+        $property  = $reflector->getProperty($propertyName);
         $property->setAccessible(true);
-        if (is_object($classOrObject)) {
-            $property->setValue($classOrObject, $propertyValue);
-        } else {
-            $property->setValue($propertyValue);
-        }
+
+        return $property;
     }
-} 
+
+    /**
+     * This method provide ability to call private/protected methods in the object
+     *
+     * @param string|object $classNameOrObject
+     * @param string        $methodName
+     * @param array         $parameters
+     *
+     * @return mixed
+     */
+    public function invokeMethod($classNameOrObject, $methodName, $parameters = array())
+    {
+        $methodReflection = $this->getMethod($classNameOrObject, $methodName);
+
+        // If string passed and class exist - try to create instance for call method
+        // This allow to invoke static methods
+        if (is_string($classNameOrObject) && class_exists($classNameOrObject)) {
+            // TODO: Throw exception when try to create abstract class
+            $classNameOrObject = new $classNameOrObject;
+        }
+        return $methodReflection->invokeArgs($classNameOrObject, $parameters);
+    }
+}
