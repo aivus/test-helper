@@ -124,26 +124,30 @@ class TestHelperTest extends \PHPUnit_Framework_TestCase
 
     public function testInvokeMethodWithObject()
     {
-        $testClass = new TestClass();
-        $expectedArgs = ['some' => 'args', 'for', 'invoke' => 'method'];
-        $actualResult = $this->testHelper->invokeMethod($testClass, 'privateMethodForInvoke', [$expectedArgs]);
+        $testClass    = new TestClass();
+        $expectedArgs = array('some' => 'args', 'for', 'invoke' => 'method');
+        $actualResult = $this->testHelper->invokeMethod($testClass, 'privateMethodForInvoke', array($expectedArgs));
 
         $this->assertEquals($expectedArgs, $actualResult);
     }
 
     public function testInvokeMethodWithClassName()
     {
-        $testClass = new TestClass();
-        $expectedArgs = ['some' => 'args', 'for', 'invoke' => 'method'];
-        $actualResult = $this->testHelper->invokeMethod($testClass, 'privateMethodForInvoke', [$expectedArgs]);
+        $testClass    = new TestClass();
+        $expectedArgs = array('some' => 'args', 'for', 'invoke' => 'method');
+        $actualResult = $this->testHelper->invokeMethod($testClass, 'privateMethodForInvoke', array($expectedArgs));
 
         $this->assertEquals($expectedArgs, $actualResult);
     }
 
     public function testInvokeMethodWithClassNameAndStaticClass()
     {
-        $expectedArgs = ['some' => 'args', 'for', 'invoke' => 'method'];
-        $actualResult = $this->testHelper->invokeMethod('Aivus\TestHelper\Tests\TestClass', 'privateStaticMethodForInvoke', [$expectedArgs]);
+        $expectedArgs = array('some' => 'args', 'for', 'invoke' => 'method');
+        $actualResult = $this->testHelper->invokeMethod(
+            'Aivus\TestHelper\Tests\TestClass',
+            'privateStaticMethodForInvoke',
+            array($expectedArgs)
+        );
 
         $this->assertEquals($expectedArgs, $actualResult);
     }
